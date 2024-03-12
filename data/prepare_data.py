@@ -47,6 +47,7 @@ def prepare_expansive_data(dataset, data_path, poisoned=False, args=None):
     data_path = os.path.join(data_path, dataset)
     if dataset == "cifar10":
         if poisoned:
+            print("Poisoned CIFAR10")
             train_data = CIFAR10Poison(args, root=data_path, train=True, download=True)
             test_data = CIFAR10Poison(args, root=data_path, train=False, download=True)
         else:

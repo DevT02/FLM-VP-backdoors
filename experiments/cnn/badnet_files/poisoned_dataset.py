@@ -3,6 +3,7 @@ from typing import Callable, Optional
 
 from PIL import Image
 from torchvision.datasets import CIFAR10, MNIST
+from torchvision import transforms
 import os 
 
 class TriggerHandler(object):
@@ -30,6 +31,10 @@ class CIFAR10Poison(CIFAR10):
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -> None:
+        if transform is None:  # If no transform is provided, use a default one
+            transform = transforms.Compose([
+                transforms.ToTensor(),  # Converts PIL images to PyTorch tensors
+            ])
         super().__init__(root, train=train, transform=transform, target_transform=target_transform, download=download)
 
         self.width, self.height, self.channels = self.__shape_info__()

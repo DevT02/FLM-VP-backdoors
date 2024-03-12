@@ -32,6 +32,15 @@ def heatmap(data, row_labels, col_labels, ax=None,
 
     # Plot the heatmap
     im = ax.imshow(data, **kwargs)
+    
+    if len(row_labels) > data.shape[0]:
+        print("Warning: Row labels exceed data dimensions, trimming labels.")
+        row_labels = row_labels[:data.shape[0]]
+
+    # Similarly, adjust for column labels
+    if len(col_labels) > data.shape[1]:
+        print("Warning: Column labels exceed data dimensions, trimming labels.")
+        col_labels = col_labels[:data.shape[1]]
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)

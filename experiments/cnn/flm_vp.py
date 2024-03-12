@@ -37,6 +37,7 @@ if __name__ == '__main__':
     p.add_argument('--trigger_label', type=int, default=1, help='The NO. of trigger label (int, range from 0 to 10, default: 0)')
     p.add_argument('--trigger_path', default="./triggers/trigger_white.png", help='Trigger Path (default: ./triggers/trigger_white.png)')
     p.add_argument('--trigger_size', type=int, default=5, help='Trigger Size (int, default: 5)')
+    p.add_argument('--poisoned', type=bool, default=False, help='Trigger Size (int, default: 5)')
 
     args = p.parse_args()
 
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     save_path = os.path.join(results_path, exp, gen_folder_name(args))
 
     # Data
-    loaders, configs = prepare_expansive_data(args.dataset, data_path, poisoned=True, args=args)
+    loaders, configs = prepare_expansive_data(args.dataset, data_path, poisoned=args.poisoned, args=args)
     normalize = transforms.Normalize(IMAGENETNORMALIZE['mean'], IMAGENETNORMALIZE['std'])
 
     # Network

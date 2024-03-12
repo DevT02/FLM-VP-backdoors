@@ -40,8 +40,7 @@ if __name__ == '__main__':
 
     args = p.parse_args()
 
-    # Misc
-    # Select dataset
+    # Miscprepare_expansive_data
     if args.dataset == 'cifar10':
         dataset_class = CIFAR10Poison
     elif args.dataset == 'mnist':
@@ -53,7 +52,7 @@ if __name__ == '__main__':
     save_path = os.path.join(results_path, exp, gen_folder_name(args))
 
     # Data
-    loaders, configs = prepare_expansive_data("cifar10", "./data", poisoned=True)
+    loaders, configs = prepare_expansive_data(args.dataset, data_path, poisoned=True, args=args)
     normalize = transforms.Normalize(IMAGENETNORMALIZE['mean'], IMAGENETNORMALIZE['std'])
 
     # Network

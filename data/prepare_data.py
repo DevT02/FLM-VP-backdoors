@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from .dataset_lmdb import COOPLMDBDataset
 from .abide import ABIDE
 from .const import GTSRB_LABEL_MAP, IMAGENETNORMALIZE
-
+from experiments.cnn.badnet_files.poisoned_dataset import CIFAR10Poison, MNISTPoison
 
 def refine_classnames(class_names):
     for i, class_name in enumerate(class_names):
@@ -43,36 +43,41 @@ def get_standard_transforms(dataset_name, poisoned=False):
 
     return transforms.Compose(transform_list)
 
-def prepare_expansive_data(dataset, data_path, poisoned=False):
+def prepare_expansive_data(dataset, data_path, poisoned=False, args=None):
     data_path = os.path.join(data_path, dataset)
-    preprocess = get_standard_transforms(dataset, poisoned=poisoned)    
     if dataset == "cifar10":
-        preprocess = transforms.Compose([
-            transforms.ToTensor(),
-        ])
-        train_data = datasets.CIFAR10(root = data_path, train = True, download = True, transform = preprocess)
-        test_data = datasets.CIFAR10(root = data_path, train = False, download = True, transform = preprocess)
+        if poisoned:
+            train_data = CIFAR10Poison(args, root=data_path, train=True, download=True)
+            test_data = CIFAR10Poison(args, root=data_path, train=False, download=True)
+        else:
+            preprocess = transforms.Compose([transforms.ToTensor()])
+            train_data = datasets.CIFAR10(root=data_path, train=True, download=True, transform=preprocess)
+            test_data = datasets.CIFAR10(root=data_path, train=False, download=True, transform=preprocess)
+        
         loaders = {
-            'train': DataLoader(train_data, 128, shuffle = True, num_workers=2),
-            'test': DataLoader(test_data, 128, shuffle = False, num_workers=2),
+            'train': DataLoader(train_data, 128, shuffle=True, num_workers=2),
+            'test': DataLoader(test_data, 128, shuffle=False, num_workers=2),
         }
         configs = {
-            'class_names': refine_classnames(test_data.classes),
+            'class_names': refine_classnames(train_data.classes),
             'mask': np.zeros((32, 32)),
-        }
-    elif dataset == "cifar100":
-        preprocess = transforms.Compose([
-            transforms.ToTensor(),
-        ])
-        train_data = datasets.CIFAR100(root = data_path, train = True, download = True, transform = preprocess)
-        test_data = datasets.CIFAR100(root = data_path, train = False, download = True, transform = preprocess)
+        }      
+    elif dataset == "mnist":
+        if poisoned:
+            train_data = MNISTPoison(args, root=data_path, train=True, download=True)
+            test_data = MNISTPoison(args, root=data_path, train=False, download=True)
+        else:
+            preprocess = transforms.Compose([transforms.ToTensor()])
+            train_data = datasets.MNIST(root=data_path, train=True, download=True, transform=preprocess)
+            test_data = datasets.MNIST(root=data_path, train=False, download=True, transform=preprocess)
+
         loaders = {
-            'train': DataLoader(train_data, 128, shuffle = True, num_workers=2),
-            'test': DataLoader(test_data, 128, shuffle = False, num_workers=2),
+            'train': DataLoader(train_data, 128, shuffle=True, num_workers=2),
+            'test': DataLoader(test_data, 128, shuffle=False, num_workers=2),
         }
         configs = {
-            'class_names': refine_classnames(test_data.classes),
-            'mask': np.zeros((32, 32)),
+            'class_names': ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+            'mask': np.zeros((28, 28)),  # Adjust the mask size for MNIST
         }
     elif dataset == "gtsrb":
         preprocess = transforms.Compose([

@@ -24,25 +24,6 @@ def get_class_names_from_split(root):
     idx_to_class = OrderedDict(sorted({s[-2]: s[-1] for s in split}.items()))
     return list(idx_to_class.values())
 
-def get_standard_transforms(dataset_name, poisoned=False):
-    """
-    Returns standard transformations for a given dataset.
-    If poisoned is True, include transformations necessary for handling poisoned data.
-    """
-    if dataset_name in ["cifar10", "cifar100", "gtsrb", "svhn"]:
-        transform_list = [transforms.Resize((32, 32)), transforms.ToTensor()]
-    elif dataset_name in ["abide", "food101", "eurosat", "sun397", "ucf101", "stanfordcars", "flowers102", "dtd", "oxfordpets"]:
-        transform_list = [transforms.Resize((128, 128)), transforms.ToTensor()]
-    else:
-        raise ValueError(f"Unsupported dataset: {dataset_name}")
-
-    if poisoned:
-        # Example: Add a placeholder for a poisoned dataset handling transform
-        # This is where you would integrate your PoisonedDataset or specific transforms
-        transform_list.append(transforms.Lambda(lambda x: x))  # Placeholder for actual poison handling
-
-    return transforms.Compose(transform_list)
-
 def prepare_expansive_data(dataset, data_path, poisoned=False, args=None):
     data_path = os.path.join(data_path, dataset)
     if dataset == "cifar10":

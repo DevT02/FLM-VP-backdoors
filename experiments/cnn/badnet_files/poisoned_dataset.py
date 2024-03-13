@@ -4,7 +4,9 @@ from typing import Callable, Optional
 from PIL import Image
 from torchvision.datasets import CIFAR10, MNIST
 from torchvision import transforms
-import os 
+import os
+
+from data.const import IMAGENETNORMALIZE 
 
 class TriggerHandler(object):
 
@@ -34,6 +36,7 @@ class CIFAR10Poison(CIFAR10):
         if transform is None:  # If no transform is provided, use a default one
             transform = transforms.Compose([
                 transforms.ToTensor(),  # Converts PIL images to PyTorch tensors
+                transforms.Normalize(IMAGENETNORMALIZE['mean'], IMAGENETNORMALIZE['std'])
             ])
         super().__init__(root, train=train, transform=transform, target_transform=target_transform, download=download)
 
